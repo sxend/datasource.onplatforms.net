@@ -10,7 +10,7 @@ dependencies:
     - envsubst < .aws/config.template > ~/.aws/config
   override:
     - mkdir -p ~/.bintray && envsubst < .credentials > ~/.bintray/.credentials
-    - ./generate.sh "accounts.onplatforms.net" "schema/accounts"
+    - ./generate.sh "accounts.onplatforms.net" "schema/accounts" "net.onplatforms.accounts.io.rdb"
     - sbt package
 test:
   override:

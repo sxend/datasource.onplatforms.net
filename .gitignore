@@ -15,3 +15,4 @@ dist/
 .ensime_cache/
 npm-debug.log
 logs/
+generated-src
