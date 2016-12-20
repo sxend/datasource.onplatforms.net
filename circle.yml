@@ -1,0 +1,18 @@
+machine:
+  java:
+    version: oraclejdk8
+  environment:
+    APP_VERSION: b${CIRCLE_BUILD_NUM}-${CIRCLE_SHA1}
+dependencies:
+  override:
+    - mkdir -p ~/.bintray && envsubst < .credentials > ~/.bintray/.credentials
+    - ./generate.sh "accounts.onplatforms.net" "accounts/schema"
+    - sbt package
+test:
+  override:
+    - sbt test
+deployment:
+  staging:
+    branch: master
+    commands:
+      - sbt "set version := \"0.0.1-${APP_VERSION}\"" publish
