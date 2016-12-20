@@ -6,7 +6,7 @@ machine:
 dependencies:
   override:
     - mkdir -p ~/.bintray && envsubst < .credentials > ~/.bintray/.credentials
-    - ./generate.sh "accounts.onplatforms.net" "accounts/schema"
+    - ./generate.sh "accounts.onplatforms.net" "schema/accounts"
     - sbt package
 test:
   override:
