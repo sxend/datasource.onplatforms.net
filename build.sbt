@@ -3,7 +3,7 @@ organization := "net.onplatforms"
 
 name := "datasource"
 
-version := s"0.0.1-${System.currentTimeMillis / 1000}"
+version := s"0.0.1-SNAPSHOT"
 
 scalaVersion := "2.11.8"
 
