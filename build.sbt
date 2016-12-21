@@ -68,7 +68,7 @@ lazy val datasource = Project(
   )
 )
 
-publishMavenStyle := true
+publishMavenStyle := false
 
 bintrayRepository := "releases"
 
