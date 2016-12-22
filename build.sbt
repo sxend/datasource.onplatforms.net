@@ -39,11 +39,17 @@ val RDB_USER = Option(System.getProperty("sbt.RDB_USER"))
 val RDB_PASS = Option(System.getProperty("sbt.RDB_PASS"))
   .orElse(Option(System.getenv("RDB_PASS"))).getOrElse("")
 
-val SCHEMA = Option(System.getProperty("sbt.SCHEMA")).getOrElse("")
-
-val PACKAGE = Option(System.getProperty("sbt.PACKAGE")).getOrElse("")
-
 lazy val slick = TaskKey[Seq[File]]("slick-gen")
+
+def codegen(cp: Classpath, r: ScalaRun, schema: String, pkg: String) = {
+  val slickDriver = "slick.driver.MySQLDriver"
+  val jdbcDriver = "com.mysql.cj.jdbc.Driver"
+  val url = s"jdbc:mysql://$RDB_HOST:$RDB_PORT/$schema?useSSL=false&nullNamePatternMatchesAll=true"
+  val outputDir = new File("generated-src/main/scala").absolutePath
+  val args = Array(slickDriver, jdbcDriver, url, outputDir, pkg, RDB_USER, RDB_PASS)
+  r.run("slick.codegen.SourceCodeGenerator", cp.files, args, Logger.Null)
+  Seq(file(outputDir + s"/Tables.scala"))
+}
 
 lazy val datasource = Project(
   id="datasource",
@@ -52,15 +58,10 @@ lazy val datasource = Project(
     scalaVersion := "2.11.8",
     libraryDependencies ++= dependencies,
     slick := {
-      val cp = (dependencyClasspath in Compile).value
-      val r = (runner in Compile).value
-      val slickDriver = "slick.driver.MySQLDriver"
-      val jdbcDriver = "com.mysql.cj.jdbc.Driver"
-      val url = s"jdbc:mysql://$RDB_HOST:$RDB_PORT/$SCHEMA?useSSL=false&nullNamePatternMatchesAll=true"
-      val outputDir = new File("generated-src/main/scala").absolutePath
-      val args = Array(slickDriver, jdbcDriver, url, outputDir, PACKAGE, RDB_USER, RDB_PASS)
-      r.run("slick.codegen.SourceCodeGenerator", cp.files, args, Logger.Null)
-      Seq(file(outputDir + "/Tables.scala"))
+      val cp: Classpath = (dependencyClasspath in Compile).value
+      val r: ScalaRun = (runner in Compile).value
+      codegen(cp, r, "www.onplatforms.net", "net.onplatforms.www.datasource") ++
+      codegen(cp, r, "accounts.onplatforms.net", "net.onplatforms.accounts.datasource")
     },
     unmanagedSourceDirectories in Compile += baseDirectory.value / "generated-src/main/scala"
   )
