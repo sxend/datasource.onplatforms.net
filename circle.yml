@@ -10,9 +10,10 @@ dependencies:
     - envsubst < .aws/config.template > ~/.aws/config
   override:
     - mkdir -p ~/.bintray && envsubst < .credentials > ~/.bintray/.credentials
-    - ./dbmigrate.sh "www.onplatforms.net" "schema/www" && \
-      ./dbmigrate.sh "accounts.onplatforms.net" "schema/accounts"
-    - sbt -Dsbt.RDB_USER=ubuntu \
+    - ./dbmigrate.sh "www.onplatforms.net" "schema/www"
+    - ./dbmigrate.sh "accounts.onplatforms.net" "schema/accounts"
+    - >
+      sbt -Dsbt.RDB_USER=ubuntu \
           -Dsbt.RDB_PASS="" \
           slick-gen package
 test:
